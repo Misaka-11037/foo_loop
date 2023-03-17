@@ -1,3 +1,5 @@
+#pragma once
+
 #if FOOBAR2000_TARGET_VERSION >= 76
 //! Callback interface receiving item locations from playlist loader. \n
 //! Typically, you call one of standard services such as playlist_incoming_item_filter instead of implementing this interface and calling playlist_loader methods directly.
@@ -47,6 +49,15 @@ public:
 	virtual void on_browse_info(const metadb_handle_ptr & p_item,t_entry_type p_type,const file_info & info, t_filetimestamp ts) = 0;
 };
 
+//! \since 1.3
+//! Extended version of playlist_loader_callback, allowing caller to pass pre-made metadb_info_container \n
+class NOVTABLE playlist_loader_callback_v2 : public playlist_loader_callback {
+	FB2K_MAKE_SERVICE_INTERFACE(playlist_loader_callback_v2, playlist_loader_callback)
+public:
+	virtual void on_entry_info_v2(const metadb_handle_ptr & p_item,t_entry_type p_type,metadb_info_container::ptr info,bool p_fresh) = 0;
+	virtual void on_browse_info_v2(const metadb_handle_ptr & p_item,t_entry_type p_type,metadb_info_container::ptr info) = 0;
+private:
+};
 
 
 //! Service handling playlist file operations. There are multiple implementations handling different playlist formats; you can add new implementations to allow new custom playlist file formats to be read or written.\n
@@ -89,6 +100,12 @@ public:
 	//! @param fileHint File object to read from, can be NULL if not available.
 	static void g_load_playlist_filehint(file::ptr fileHint,const char * p_path,playlist_loader_callback::ptr p_callback, abort_callback & p_abort);
 
+	//! Attempts to load a playlist file from specified filesystem path. Throws exception_io or derivatives on failure, exception_aborted on abort. If specified file is not a recognized playlist file, returns false; returns true upon successful playlist load.
+	//! @param p_path Filesystem path to load playlist from, a UTF-8 encoded null-terminated string.
+	//! @param p_callback Callback object receiving enumerated playable item locations as well as signaling user aborting the operation.
+	//! @param fileHint File object to read from, can be NULL if not available.
+	static bool g_try_load_playlist(file::ptr fileHint,const char * p_path,playlist_loader_callback::ptr p_callback, abort_callback & p_abort);
+
 	//! Saves specified list of locations into a playlist file. Throws exception_io or derivatives on failure, exception_aborted on abort.
 	//! @param p_path Filesystem path to save playlist to, a UTF-8 encoded null-terminated string.
 	//! @param p_data List of items to save to playlist file.
@@ -107,6 +124,9 @@ public:
 	//! Warning: caller must handle exceptions which will occur in case of I/O failure or playlist parsing failure.
 	//! @returns True if specified path was processed as a playlist file, false otherwise (relevant in some scenarios where output is sorted after loading, playlist file contents should not be sorted).
 	static bool g_process_path_ex(const char * p_path,playlist_loader_callback::ptr p_callback, abort_callback & p_abort,playlist_loader_callback::t_entry_type p_type = playlist_loader_callback::entry_user_requested);
+
+
+	static void g_path_to_handles_simple(const char* p_path, pfc::list_base_t<metadb_handle_ptr>& p_out, abort_callback& p_abort);
 
 	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(playlist_loader);
 };

@@ -138,7 +138,7 @@ public:
 };
 
 
-static input_factory_ex_t<input_loop, input_entry::flag_redirect, input_decoder_v2> g_input_loop_factory;
+static input_factory_t<input_loop, input_entry::flag_redirect> g_input_loop_factory;
 
 
 DECLARE_COMPONENT_VERSION("Standard Loop Information Handler","0.5.0","Standard Looping Handler.\nThis includes .loop and .sli support.");

@@ -745,7 +745,7 @@ public:
 };
 
 
-static input_singletrack_factory_ex_t<input_sli, input_entry::flag_redirect, input_decoder_v2> g_input_sli_factory;
+static input_singletrack_factory_t<input_sli, input_entry::flag_redirect> g_input_sli_factory;
 
 
 //DECLARE_COMPONENT_VERSION("sli loop manager","0.3-dev",NULL);

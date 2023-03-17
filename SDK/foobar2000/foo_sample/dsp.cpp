@@ -24,7 +24,7 @@ public:
 
 		
 		// trivial DSP code: apply our gain to the audio data.
-		chunk->scale( audio_math::gain_to_scale( m_gain ) );
+		chunk->scale( (audio_sample)audio_math::gain_to_scale( m_gain ) );
 
 		// To retrieve the currently processed track, use get_cur_file().
 		// Warning: the track is not always known - it's up to the calling component to provide this data and in some situations we'll be working with data that doesn't originate from an audio file.
@@ -95,7 +95,7 @@ public:
 		RangeTotal = RangeMax - RangeMin
 	};
 
-	BEGIN_MSG_MAP(CMyDSPPopup)
+	BEGIN_MSG_MAP_EX(CMyDSPPopup)
 		MSG_WM_INITDIALOG(OnInitDialog)
 		COMMAND_HANDLER_EX(IDOK, BN_CLICKED, OnButton)
 		COMMAND_HANDLER_EX(IDCANCEL, BN_CLICKED, OnButton)
@@ -146,5 +146,9 @@ private:
 
 static void RunDSPConfigPopup(const dsp_preset & p_data,HWND p_parent,dsp_preset_edit_callback & p_callback) {
 	CMyDSPPopup popup(p_data, p_callback);
-	if (popup.DoModal(p_parent) != IDOK) p_callback.on_preset_changed(p_data);
+	if (popup.DoModal(p_parent) != IDOK) {
+		// If the dialog exited with something else than IDOK,k 
+		// tell host that the editing has been cancelled by sending it old preset data that we got initialized with
+		p_callback.on_preset_changed(p_data);
+	}
 }

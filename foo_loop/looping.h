@@ -471,7 +471,7 @@ namespace loop_helper {
 		virtual void open_decoding_internal(t_uint32 subsong, t_uint32 flags, abort_callback & p_abort) = 0;
 
 		virtual input_decoder::ptr & get_input() {
-			if (m_current_input.is_empty()) throw pfc::exception_bug_check_v2();
+			if (m_current_input.is_empty()) throw pfc::exception_bug_check();
 			return m_current_input;
 		}
 		virtual input_decoder_v2::ptr & get_input_v2() {
@@ -521,12 +521,12 @@ namespace loop_helper {
 		}
 
 		virtual pfc::list_permutation_t<loop_event_point::ptr> get_points_by_pos() {
-			if (m_cur_points_by_pos == NULL) throw pfc::exception_bug_check_v2();
+			if (m_cur_points_by_pos == NULL) throw pfc::exception_bug_check();
 			return *m_cur_points_by_pos;
 		}
 
 		virtual pfc::list_permutation_t<loop_event_point::ptr> get_points_by_prepos() {
-			if (m_cur_points_by_prepos == NULL) throw pfc::exception_bug_check_v2();
+			if (m_cur_points_by_prepos == NULL) throw pfc::exception_bug_check();
 			return *m_cur_points_by_prepos;
 		}
 
@@ -999,7 +999,7 @@ namespace loop_helper {
 		}
 	};
 
-	class NOVTABLE input_loop_base
+	class NOVTABLE input_loop_base:public input_stubs
 	{
 	public:
 		void open(file::ptr p_filehint,const char * p_path,t_input_open_reason p_reason,abort_callback & p_abort) {
@@ -1084,6 +1084,15 @@ namespace loop_helper {
 		}
 
 		void set_logger(event_logger::ptr ptr) {m_looptype->set_logger(ptr);}
+
+		static const char* g_get_name() { return "sli"; }
+		static const GUID g_get_guid() {
+			// GUID of the decoder. Replace with your own when reusing code.
+			static const GUID I_am_foo_sample_and_this_is_my_decoder_GUID = { 0xd9c01c8d, 0x69c5, 0x4eec,{ 0xa2, 0x1c, 0x1d, 0x14, 0xef, 0x65, 0xbf, 0x8c } };
+			return I_am_foo_sample_and_this_is_my_decoder_GUID;
+		}
+		void remove_tags(abort_callback&) { throw exception_tagging_unsupported(); }
+		t_filestats2 get_stats2(unsigned f, abort_callback& a) { return m_loopfile->get_stats2_(f, a); }
 
 	protected:
 		input_loop_base(const char * p_info_prefix) : m_info_prefix(p_info_prefix) {}

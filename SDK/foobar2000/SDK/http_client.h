@@ -1,3 +1,5 @@
+#pragma once
+
 //! Implemented by file object returned by http_request::run methods. Allows you to retrieve various additional information returned by the server. \n
 //! Warning: reply status may change when seeking on the file object since seek operations often require a new HTTP request to be fired.
 class NOVTABLE http_reply : public service_base {
@@ -21,6 +23,10 @@ public:
 	virtual file::ptr run(const char * url, abort_callback & abort) = 0;
 	//! Runs the request on the specified URL. Throws an exception on failure but returns normally if the HTTP server returned a valid response other than 2XX, so the caller can still parse the received data stream if the server has returned an error.
 	virtual file::ptr run_ex(const char * url, abort_callback & abort) = 0;
+
+	void add_header(const char * name, const char * value) {
+		add_header(PFC_string_formatter() << name << ": " << value);
+	}
 };
 
 class NOVTABLE http_request_post : public http_request {
@@ -35,8 +41,15 @@ public:
 	void add_post_data(const char * name, const char * value) { add_post_data(name, value, strlen(value), "", ""); }
 };
 
+//! \since 1.5
+class NOVTABLE http_request_post_v2 : public http_request_post {
+	FB2K_MAKE_SERVICE_INTERFACE(http_request_post_v2, http_request_post);
+public:
+	virtual void set_post_data(const void* blob, size_t bytes, const char* contentType) = 0;
+};
+
 class NOVTABLE http_client : public service_base {
-	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(http_client)
+	FB2K_MAKE_SERVICE_COREAPI(http_client)
 public:
 	//! Creates a HTTP request object.
 	//! @param type Request type. Currently supported: "GET" and "POST". Throws pfc::exception_not_implemented for unsupported values.

@@ -1,3 +1,8 @@
+#pragma once
+
+#include "audio_chunk.h"
+#include "mem_block_container.h"
+
 //! This class handles conversion of audio data (audio_chunk) to various linear PCM types, with optional dithering.
 
 class NOVTABLE audio_postprocessor : public service_base
@@ -21,5 +26,5 @@ public:
 
 
 
-	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(audio_postprocessor);
+	FB2K_MAKE_SERVICE_COREAPI(audio_postprocessor);
 };
