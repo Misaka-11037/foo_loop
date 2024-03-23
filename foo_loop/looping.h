@@ -1088,8 +1088,8 @@ namespace loop_helper {
 		static const char* g_get_name() { return "sli"; }
 		static const GUID g_get_guid() {
 			// GUID of the decoder. Replace with your own when reusing code.
-			static const GUID I_am_foo_sample_and_this_is_my_decoder_GUID = { 0xd9c01c8d, 0x69c5, 0x4eec,{ 0xa2, 0x1c, 0x1d, 0x14, 0xef, 0x65, 0xbf, 0x8c } };
-			return I_am_foo_sample_and_this_is_my_decoder_GUID;
+			static const GUID GUID = { 0x6b48db45, 0x9101, 0x4d12,{ 0x87, 0xb5, 0x2c, 0xfa, 0x69, 0xa1, 0x82, 0x8e } };
+			return GUID;
 		}
 		void remove_tags(abort_callback&) { throw exception_tagging_unsupported(); }
 		t_filestats2 get_stats2(unsigned f, abort_callback& a) { return m_loopfile->get_stats2_(f, a); }
